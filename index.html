@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>WhatsApp Formatting Previewer - Sankalp Malik</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="http://materializecss.com/dist/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <style>
+  .wh_head{
+          font-size: 1.4rem!important;
+  }
+  </style>
+</head>
+<body>
+
+  <div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+      <br><br>
+      <h1 class=" center orange-text">WhatsApp Formatting Previewer</h1>
+      <div class="row center">
+        <h5 class="header col s12 light">Short Script which tries to replicate <a href="https://faq.whatsapp.com/en/android/26000002/" target="_blank">formatting messages in WhatsApp</a></h5>
+      </div>
+      <br><br>
+
+    </div>
+  </div>
+
+
+  <div class="container">
+    <div class="section">
+
+      <!--   Icon Section   -->
+      <div class="row">
+          <div class="col l4 offset-l1 s10 offset-s1">
+              <h5>Enter Text </h5>
+              <textarea id="msg_template" class="materialize-textarea">*Hello All*
+This is Just a _*Demo*_.
+I Needed it for one of my projects.
+Didnt find any such library, so made it.
+Change text here, to see its preview in the next card.
+Thanks,
+*Sankalp Malik*
+</textarea>
+          </div>
+          <div class="col l4 offset-l1 s10 offset-s1">
+              <div class="card">
+                <div class="card-content">
+                  <span class="card-title">Live WhatsApp Preview</span>
+                  <hr>
+                  <p id="preview_div" ></p>
+                </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <br><br>
+  </div>
+
+  <div class="container">
+      <div class="row">
+      <blockquote id="whatsapp_helper_div" class="col s12 l8 offset-l2 m10 offset-m1">
+        <p class="flow-text">Tips to Format Text in WhatsApp</p>
+          <i class="wh_head">Italic</i>
+          <br>
+          To italicize your message, place an underscore on both sides of the text, like so: <strong>_text_</strong>
+          <br>
+          <br>
+          <strong class="wh_head">Bold</strong>
+          <br>
+          To bold your message, place an asterisk on both sides of the text, like so: <strong>*text*</strong>
+          <br>
+          <br>
+          <del class="wh_head">Strikethrough</del>
+          <br>
+          To strikethrough your message, place a tilde on both sides of the text, like so: <strong>~text~</strong>
+          <br>
+          <br>
+          <span class="right">Source : <a href="https://faq.whatsapp.com/en/android/26000002/" target="_blank">WhatsApp</a></span>
+    </blockquote>
+</div>
+  </div>
+
+  <footer class="page-footer orange">
+    <div class="footer-copyright">
+      <div class="container center">
+      Developed by <a href="mailto:sankalp.malik2000@gmail.com" class="orange-text text-lighten-3">Sankalp Malik</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="http://materializecss.com/bin/materialize.js"></script>
+  <script>
+
+      window.onload = function(){
+          $('#msg_template').trigger('autoresize');
+          $('#msg_template').change(show_live_preview);
+          $('#msg_template').blur(show_live_preview);
+          $('#msg_template').keyup(show_live_preview);
+          show_live_preview();
+      };
+
+      function show_live_preview(){
+        var format=$('#msg_template').val();
+        format=whatsappStyles(format,'_', '<i>', '</i>');
+        format=whatsappStyles(format,'*', '<b>', '</b>');
+        format=whatsappStyles(format,'~', '<s>', '</s>');
+        format=format.replace(/\n/gi,"<br>");
+        $('#preview_div').html(format);
+      }
+
+      function is_aplhanumeric(c){
+      	var x = c.charCodeAt();
+        return ((x>=65&&x<=90)||(x>=97&&x<=122)||(x>=48&&x<=57))?true:false;
+      }
+
+      function whatsappStyles(format,wildcard, opTag, clTag) {
+      	var indices = [];
+      	for(var i = 0; i < format.length; i++) {
+      		if (format[i] === wildcard) {
+      			if(indices.length%2)
+      				(format[i-1]==" ")?null:((typeof(format[i+1])=="undefined")?indices.push(i):(is_aplhanumeric(format[i+1])?null:indices.push(i)));
+      			else
+              		(typeof(format[i+1])=="undefined")?null:((format[i+1]==" ")?null:(typeof(format[i-1])=="undefined")?indices.push(i):((is_aplhanumeric(format[i-1]))?null:indices.push(i)));
+      		}
+      	    else{
+      			(format[i].charCodeAt()==10 && indices.length % 2)?indices.pop():null;
+      		}
+      	}
+      	(indices.length % 2)?indices.pop():null;
+      	var e=0;
+      	indices.forEach(function(v,i){
+      		var t=(i%2)?clTag:opTag;
+          	v+=e;
+      		format=format.substr(0,v)+t+format.substr(v+1);
+      		e+=(t.length-1);
+      	});
+      	return format;
+      }
+
+  </script>
+
+  </body>
+</html>
